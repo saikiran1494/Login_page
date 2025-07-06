@@ -1,0 +1,210 @@
+@{
+    ViewData["Title"] = "Verify OTP";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row justify-content-center min-vh-100 align-items-center">
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow-lg border-0 rounded-3">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <div class="bg-info rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-mobile-alt text-white" style="font-size: 2rem;"></i>
+                    </div>
+                    <h2 class="fw-bold text-info mb-2">Verify OTP</h2>
+                    <p class="text-muted">Enter the 6-digit code sent to your mobile</p>
+                    <p class="text-primary fw-semibold">@ViewBag.MobileNumber</p>
+                </div>
+
+                <form asp-action="VerifyOTP" method="post" class="needs-validation" novalidate>
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="mobileNumber" value="@ViewBag.MobileNumber" />
+                    <input type="hidden" name="purpose" value="@ViewBag.Purpose" />
+                    
+                    <div class="mb-4">
+                        <label for="otpCode" class="form-label fw-semibold">
+                            <i class="fas fa-key me-2"></i>OTP Code
+                        </label>
+                        <div class="otp-input-container">
+                            <div class="row justify-content-center">
+                                <div class="col-2">
+                                    <input type="text" class="form-control text-center otp-input" maxlength="1" data-index="1">
+                                </div>
+                                <div class="col-2">
+                                    <input type="text" class="form-control text-center otp-input" maxlength="1" data-index="2">
+                                </div>
+                                <div class="col-2">
+                                    <input type="text" class="form-control text-center otp-input" maxlength="1" data-index="3">
+                                </div>
+                                <div class="col-2">
+                                    <input type="text" class="form-control text-center otp-input" maxlength="1" data-index="4">
+                                </div>
+                                <div class="col-2">
+                                    <input type="text" class="form-control text-center otp-input" maxlength="1" data-index="5">
+                                </div>
+                                <div class="col-2">
+                                    <input type="text" class="form-control text-center otp-input" maxlength="1" data-index="6">
+                                </div>
+                            </div>
+                            <input type="hidden" id="otpCode" name="otpCode" />
+                        </div>
+                        <div class="invalid-feedback">
+                            Please enter the 6-digit OTP code.
+                        </div>
+                    </div>
+
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn btn-info btn-lg fw-semibold">
+                            <i class="fas fa-check me-2"></i>Verify OTP
+                        </button>
+                    </div>
+
+                    <div class="text-center">
+                        <p class="text-muted mb-2">Didn't receive the code?</p>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" id="resendOTP">
+                            <i class="fas fa-redo me-1"></i>Resend OTP
+                        </button>
+                    </div>
+                </form>
+
+                <hr class="my-4">
+
+                <div class="text-center">
+                    <a href="@Url.Action("Login", "Account")" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // OTP input handling
+            $('.otp-input').on('input', function() {
+                const value = $(this).val();
+                const index = parseInt($(this).data('index'));
+                
+                if (value.length === 1) {
+                    // Move to next input
+                    if (index < 6) {
+                        $(`.otp-input[data-index="${index + 1}"]`).focus();
+                    }
+                } else if (value.length === 0) {
+                    // Move to previous input on backspace
+                    if (index > 1) {
+                        $(`.otp-input[data-index="${index - 1}"]`).focus();
+                    }
+                }
+                
+                updateOTPCode();
+            });
+
+            // Handle backspace
+            $('.otp-input').on('keydown', function(e) {
+                if (e.key === 'Backspace' && $(this).val().length === 0) {
+                    const index = parseInt($(this).data('index'));
+                    if (index > 1) {
+                        $(`.otp-input[data-index="${index - 1}"]`).focus();
+                    }
+                }
+            });
+
+            // Update hidden OTP field
+            function updateOTPCode() {
+                let otpCode = '';
+                $('.otp-input').each(function() {
+                    otpCode += $(this).val();
+                });
+                $('#otpCode').val(otpCode);
+            }
+
+            // Form validation
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    const otpCode = $('#otpCode').val();
+                    if (otpCode.length !== 6) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        $('.otp-input').addClass('is-invalid');
+                    } else {
+                        $('.otp-input').removeClass('is-invalid');
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+
+            // Resend OTP functionality
+            $('#resendOTP').click(function() {
+                const button = $(this);
+                const originalText = button.html();
+                let countdown = 30;
+                
+                button.prop('disabled', true);
+                button.html(`<i class="fas fa-clock me-1"></i>Resend in ${countdown}s`);
+                
+                const timer = setInterval(function() {
+                    countdown--;
+                    button.html(`<i class="fas fa-clock me-1"></i>Resend in ${countdown}s`);
+                    
+                    if (countdown <= 0) {
+                        clearInterval(timer);
+                        button.prop('disabled', false);
+                        button.html(originalText);
+                    }
+                }, 1000);
+                
+                // Here you would typically make an AJAX call to resend OTP
+                // For demo purposes, we'll just show a success message
+                setTimeout(function() {
+                    $('<div class="alert alert-success alert-dismissible fade show mt-3" role="alert">' +
+                      '<i class="fas fa-check-circle me-2"></i>OTP resent successfully!' +
+                      '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>' +
+                      '</div>').insertAfter(button);
+                }, 1000);
+            });
+
+            // Auto-focus first OTP input
+            $('.otp-input[data-index="1"]').focus();
+
+            // Smooth animations
+            $('.card').hide().fadeIn(800);
+            
+            // Input focus effects
+            $('.otp-input').focus(function() {
+                $(this).addClass('border-primary shadow-sm');
+            }).blur(function() {
+                $(this).removeClass('border-primary shadow-sm');
+            });
+
+            // Button hover effects
+            $('.btn').hover(
+                function() { $(this).addClass('shadow-sm'); },
+                function() { $(this).removeClass('shadow-sm'); }
+            );
+        });
+    </script>
+}
+
+<style>
+    .otp-input {
+        font-size: 1.5rem;
+        font-weight: bold;
+        height: 60px;
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+    
+    .otp-input:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+    
+    .otp-input.is-invalid {
+        border-color: #dc3545;
+    }
+</style> 

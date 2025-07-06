@@ -1,0 +1,377 @@
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Welcome Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-gradient-primary text-white">
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h1 class="fw-bold mb-2">Welcome back, @Context.Session.GetString("FullName")!</h1>
+                            <p class="mb-0 opacity-75">Track your fitness journey and achieve your goals</p>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <div class="d-flex align-items-center justify-content-md-end">
+                                <div class="me-3">
+                                    <i class="fas fa-calendar-alt fa-2x"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-0">@DateTime.Now.ToString("dddd, MMMM dd")</h5>
+                                    <small class="opacity-75">@DateTime.Now.ToString("yyyy")</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card hover-lift">
+                <div class="stat-icon bg-primary">
+                    <i class="fas fa-dumbbell"></i>
+                </div>
+                <div class="stat-number">@(ViewBag.WorkoutStats?["TotalWorkouts"] ?? 0)</div>
+                <div class="stat-label">Total Workouts</div>
+                <div class="progress mt-3">
+                    <div class="progress-bar bg-primary" style="width: @(Math.Min((ViewBag.WorkoutStats?["TotalWorkouts"] ?? 0) * 10, 100))%"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card hover-lift">
+                <div class="stat-icon bg-success">
+                    <i class="fas fa-fire"></i>
+                </div>
+                <div class="stat-number">@(ViewBag.WorkoutStats?["TotalCalories"] ?? 0)</div>
+                <div class="stat-label">Calories Burned</div>
+                <div class="progress mt-3">
+                    <div class="progress-bar bg-success" style="width: @(Math.Min((ViewBag.WorkoutStats?["TotalCalories"] ?? 0) / 100, 100))%"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card hover-lift">
+                <div class="stat-icon bg-warning">
+                    <i class="fas fa-apple-alt"></i>
+                </div>
+                <div class="stat-number">@(ViewBag.NutritionStats?["TotalCalories"] ?? 0)</div>
+                <div class="stat-label">Calories Consumed</div>
+                <div class="progress mt-3">
+                    <div class="progress-bar bg-warning" style="width: @(Math.Min((ViewBag.NutritionStats?["TotalCalories"] ?? 0) / 2000 * 100, 100))%"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card hover-lift">
+                <div class="stat-icon bg-info">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="stat-number">@(ViewBag.RewardStats?["TotalPoints"] ?? 0)</div>
+                <div class="stat-label">Total Points</div>
+                <div class="progress mt-3">
+                    <div class="progress-bar bg-info" style="width: @(Math.Min((ViewBag.RewardStats?["TotalPoints"] ?? 0) / 100, 100))%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Recent Activities -->
+        <div class="col-lg-8 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-line me-2"></i>Recent Activities
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="nav nav-tabs" id="activityTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="workouts-tab" data-bs-toggle="tab" data-bs-target="#workouts" type="button" role="tab">
+                                <i class="fas fa-dumbbell me-1"></i>Workouts
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="meals-tab" data-bs-toggle="tab" data-bs-target="#meals" type="button" role="tab">
+                                <i class="fas fa-apple-alt me-1"></i>Meals
+                            </button>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content mt-3" id="activityTabContent">
+                        <!-- Workouts Tab -->
+                        <div class="tab-pane fade show active" id="workouts" role="tabpanel">
+                            @if (ViewBag.RecentWorkouts != null && ViewBag.RecentWorkouts.Count > 0)
+                            {
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Workout</th>
+                                                <th>Duration</th>
+                                                <th>Calories</th>
+                                                <th>Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var workout in ViewBag.RecentWorkouts)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                                                <i class="fas fa-dumbbell text-white"></i>
+                                                            </div>
+                                                            <div>
+                                                                <h6 class="mb-0">@workout.Workout.Name</h6>
+                                                                <small class="text-muted">@workout.Status</small>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>@workout.Duration min</td>
+                                                    <td>@workout.CaloriesBurned cal</td>
+                                                    <td>@workout.Date.ToString("MMM dd")</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="text-center py-4">
+                                    <i class="fas fa-dumbbell fa-3x text-muted mb-3"></i>
+                                    <h5 class="text-muted">No recent workouts</h5>
+                                    <p class="text-muted">Start your fitness journey today!</p>
+                                    <a href="@Url.Action("Index", "Fitness")" class="btn btn-primary">
+                                        <i class="fas fa-plus me-2"></i>Start Workout
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                        
+                        <!-- Meals Tab -->
+                        <div class="tab-pane fade" id="meals" role="tabpanel">
+                            @if (ViewBag.RecentMeals != null && ViewBag.RecentMeals.Count > 0)
+                            {
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Meal</th>
+                                                <th>Type</th>
+                                                <th>Calories</th>
+                                                <th>Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var meal in ViewBag.RecentMeals)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="bg-success rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                                                <i class="fas fa-apple-alt text-white"></i>
+                                                            </div>
+                                                            <div>
+                                                                <h6 class="mb-0">@meal.Meal.Name</h6>
+                                                                <small class="text-muted">@meal.MealType</small>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge bg-success">@meal.MealType</span>
+                                                    </td>
+                                                    <td>@meal.Calories cal</td>
+                                                    <td>@meal.Date.ToString("MMM dd")</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="text-center py-4">
+                                    <i class="fas fa-apple-alt fa-3x text-muted mb-3"></i>
+                                    <h5 class="text-muted">No recent meals</h5>
+                                    <p class="text-muted">Track your nutrition to stay healthy!</p>
+                                    <a href="@Url.Action("Index", "Diet")" class="btn btn-success">
+                                        <i class="fas fa-plus me-2"></i>Log Meal
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions & Rewards -->
+        <div class="col-lg-4 mb-4">
+            <!-- Quick Actions -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="@Url.Action("Index", "Fitness")" class="btn btn-primary">
+                            <i class="fas fa-dumbbell me-2"></i>Start Workout
+                        </a>
+                        <a href="@Url.Action("Index", "Diet")" class="btn btn-success">
+                            <i class="fas fa-apple-alt me-2"></i>Log Meal
+                        </a>
+                        <a href="@Url.Action("Statistics", "Dashboard")" class="btn btn-info">
+                            <i class="fas fa-chart-bar me-2"></i>View Statistics
+                        </a>
+                        <a href="@Url.Action("Index", "Rewards")" class="btn btn-warning">
+                            <i class="fas fa-trophy me-2"></i>Rewards
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Rewards -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-trophy me-2"></i>Recent Rewards
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.RewardStats != null && ViewBag.RewardStats["TotalRewards"] > 0)
+                    {
+                        <div class="text-center mb-3">
+                            <div class="bg-warning rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 60px; height: 60px;">
+                                <i class="fas fa-trophy text-white fa-2x"></i>
+                            </div>
+                            <h4 class="text-warning mb-1">@ViewBag.RewardStats["TotalPoints"]</h4>
+                            <p class="text-muted mb-0">Total Points Earned</p>
+                        </div>
+                        
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <h5 class="text-primary">@ViewBag.RewardStats["CurrentStreak"]</h5>
+                                <small class="text-muted">Current Streak</small>
+                            </div>
+                            <div class="col-6">
+                                <h5 class="text-success">@ViewBag.RewardStats["LongestStreak"]</h5>
+                                <small class="text-muted">Longest Streak</small>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-3">
+                            <i class="fas fa-trophy fa-2x text-muted mb-2"></i>
+                            <h6 class="text-muted">No rewards yet</h6>
+                            <p class="text-muted small">Complete workouts and follow your diet to earn rewards!</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Progress Charts -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-line me-2"></i>Weekly Progress
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="weeklyProgressChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Initialize dashboard animations
+            $('.stat-card').each(function(index) {
+                $(this).css('animation-delay', (index * 0.1) + 's');
+            });
+            
+            // Initialize weekly progress chart
+            const ctx = document.getElementById('weeklyProgressChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Workouts',
+                        data: [2, 3, 1, 4, 2, 3, 1],
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Calories Burned',
+                        data: [300, 450, 200, 600, 350, 500, 250],
+                        borderColor: 'rgb(255, 99, 132)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Weekly Activity Progress'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            
+            // Add hover effects to cards
+            $('.stat-card').hover(
+                function() {
+                    $(this).addClass('shadow-lg');
+                },
+                function() {
+                    $(this).removeClass('shadow-lg');
+                }
+            );
+            
+            // Auto-refresh dashboard data every 30 seconds
+            setInterval(function() {
+                // You can add AJAX call here to refresh dashboard data
+                console.log('Dashboard data refreshed');
+            }, 30000);
+        });
+    </script>
+} 

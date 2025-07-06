@@ -1,0 +1,246 @@
+@model FitnessTracker.Models.User
+@{
+    ViewData["Title"] = "Register";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row justify-content-center min-vh-100 align-items-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-lg border-0 rounded-3">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <div class="bg-success rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-user-plus text-white" style="font-size: 2rem;"></i>
+                    </div>
+                    <h2 class="fw-bold text-success mb-2">Join FitnessTracker</h2>
+                    <p class="text-muted">Create your account and start your fitness journey</p>
+                </div>
+
+                <form asp-action="Register" method="post" class="needs-validation" novalidate>
+                    @Html.AntiForgeryToken()
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Username" class="form-label fw-semibold">
+                                <i class="fas fa-user me-2"></i>Username
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-user text-muted"></i>
+                                </span>
+                                <input asp-for="Username" class="form-control border-start-0" 
+                                       placeholder="Choose a username" required>
+                            </div>
+                            <span asp-validation-for="Username" class="text-danger"></span>
+                            <div class="invalid-feedback">
+                                Please choose a username.
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="FullName" class="form-label fw-semibold">
+                                <i class="fas fa-id-card me-2"></i>Full Name
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-id-card text-muted"></i>
+                                </span>
+                                <input asp-for="FullName" class="form-control border-start-0" 
+                                       placeholder="Enter your full name">
+                            </div>
+                            <span asp-validation-for="FullName" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label fw-semibold">
+                            <i class="fas fa-envelope me-2"></i>Email Address
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0">
+                                <i class="fas fa-envelope text-muted"></i>
+                            </span>
+                            <input asp-for="Email" type="email" class="form-control border-start-0" 
+                                   placeholder="Enter your email address" required>
+                        </div>
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                        <div class="invalid-feedback">
+                            Please enter a valid email address.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="MobileNumber" class="form-label fw-semibold">
+                            <i class="fas fa-mobile-alt me-2"></i>Mobile Number
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0">
+                                <i class="fas fa-mobile-alt text-muted"></i>
+                            </span>
+                            <input asp-for="MobileNumber" class="form-control border-start-0" 
+                                   placeholder="Enter your mobile number" required>
+                        </div>
+                        <span asp-validation-for="MobileNumber" class="text-danger"></span>
+                        <div class="invalid-feedback">
+                            Please enter your mobile number.
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="password" class="form-label fw-semibold">
+                                <i class="fas fa-lock me-2"></i>Password
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-lock text-muted"></i>
+                                </span>
+                                <input type="password" class="form-control border-start-0" id="password" name="Password" 
+                                       placeholder="Create a password" required>
+                                <button class="btn btn-outline-secondary border-start-0" type="button" id="togglePassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="invalid-feedback">
+                                Please create a password.
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <label for="confirmPassword" class="form-label fw-semibold">
+                                <i class="fas fa-lock me-2"></i>Confirm Password
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-lock text-muted"></i>
+                                </span>
+                                <input type="password" class="form-control border-start-0" id="confirmPassword" name="confirmPassword" 
+                                       placeholder="Confirm your password" required>
+                                <button class="btn btn-outline-secondary border-start-0" type="button" id="toggleConfirmPassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="invalid-feedback">
+                                Please confirm your password.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn btn-success btn-lg fw-semibold">
+                            <i class="fas fa-user-plus me-2"></i>Create Account
+                        </button>
+                    </div>
+
+                    <div class="text-center">
+                        <small class="text-muted">
+                            By creating an account, you agree to our 
+                            <a href="#" class="text-decoration-none">Terms of Service</a> and 
+                            <a href="#" class="text-decoration-none">Privacy Policy</a>.
+                        </small>
+                    </div>
+                </form>
+
+                <hr class="my-4">
+
+                <div class="text-center">
+                    <p class="text-muted mb-0">Already have an account?</p>
+                    <a href="@Url.Action("Login", "Account")" class="btn btn-outline-primary mt-2">
+                        <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Form validation
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    
+                    // Check if passwords match
+                    const password = $('#password').val();
+                    const confirmPassword = $('#confirmPassword').val();
+                    
+                    if (password !== confirmPassword) {
+                        event.preventDefault();
+                        $('#confirmPassword')[0].setCustomValidity('Passwords do not match');
+                    } else {
+                        $('#confirmPassword')[0].setCustomValidity('');
+                    }
+                    
+                    form.classList.add('was-validated');
+                }, false);
+            });
+
+            // Password toggle functions
+            function togglePasswordVisibility(inputId, buttonId) {
+                $(buttonId).click(function() {
+                    const input = $(inputId);
+                    const icon = $(this).find('i');
+                    
+                    if (input.attr('type') === 'password') {
+                        input.attr('type', 'text');
+                        icon.removeClass('fa-eye').addClass('fa-eye-slash');
+                    } else {
+                        input.attr('type', 'password');
+                        icon.removeClass('fa-eye-slash').addClass('fa-eye');
+                    }
+                });
+            }
+
+            togglePasswordVisibility('#password', '#togglePassword');
+            togglePasswordVisibility('#confirmPassword', '#toggleConfirmPassword');
+
+            // Password strength indicator
+            $('#password').on('input', function() {
+                const password = $(this).val();
+                let strength = 0;
+                
+                if (password.length >= 8) strength++;
+                if (/[a-z]/.test(password)) strength++;
+                if (/[A-Z]/.test(password)) strength++;
+                if (/[0-9]/.test(password)) strength++;
+                if (/[^A-Za-z0-9]/.test(password)) strength++;
+                
+                const strengthBar = $('<div class="progress mt-2" style="height: 5px;"><div class="progress-bar"></div></div>');
+                const progressBar = strengthBar.find('.progress-bar');
+                
+                if (strength <= 2) {
+                    progressBar.addClass('bg-danger').css('width', (strength * 20) + '%');
+                } else if (strength <= 3) {
+                    progressBar.addClass('bg-warning').css('width', (strength * 20) + '%');
+                } else {
+                    progressBar.addClass('bg-success').css('width', (strength * 20) + '%');
+                }
+                
+                $(this).parent().parent().find('.progress').remove();
+                $(this).parent().parent().append(strengthBar);
+            });
+
+            // Smooth animations
+            $('.card').hide().fadeIn(800);
+            
+            // Input focus effects
+            $('.form-control').focus(function() {
+                $(this).parent().addClass('shadow-sm');
+            }).blur(function() {
+                $(this).parent().removeClass('shadow-sm');
+            });
+
+            // Button hover effects
+            $('.btn').hover(
+                function() { $(this).addClass('shadow-sm'); },
+                function() { $(this).removeClass('shadow-sm'); }
+            );
+        });
+    </script>
+} 
